@@ -1,0 +1,22 @@
+{
+  "typescript.preferences.includePackageJsonAutoImports": "off",
+  "typescript.suggest.autoImports": false,
+  "typescript.suggest.includeAutomaticOptionalChainCompletions": false,
+  "typescript.suggest.completeFunctionCalls": false,
+  "editor.suggest.snippetsPreventQuickSuggestions": false,
+  "typescript.tsc.autoDetect": "off",
+  "eslint.run": "onSave",
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.git/**": true,
+    "**/.next/**": true,
+    "**/dist/**": true,
+    "**/build/**": true,
+    "**/src/generated/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/src/generated": true,
+    "**/.next": true
+  }
+}
