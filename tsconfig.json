@@ -15,6 +15,8 @@
     "incremental": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
+    "maxNodeModuleJsDepth": 1,
+    "disableSourceOfProjectReferenceRedirect": true,
     "plugins": [
       {
         "name": "next"
@@ -26,5 +28,9 @@
     "types": ["node"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "src/generated/prisma/**/*.tmp*",
+    "src/generated/prisma/query_engine*"
+  ]
 }

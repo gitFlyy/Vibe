@@ -8,7 +8,8 @@ import { prisma } from "@/lib/db";
 
 interface AgentState {
   summary: string;
-  files: { [path: string]: string }
+  files: { [path: string]: string };
+  error?: string;
 }
 
 export const codeAgentFunction = inngest.createFunction(
@@ -119,12 +120,9 @@ export const codeAgentFunction = inngest.createFunction(
           const lastAssistantMessageText = lastAssistantTextMessageContent(result);
 
           if (lastAssistantMessageText && network) {
-            // Store the last assistant message as the summary regardless
             network.state.data.summary = lastAssistantMessageText;
-            
-            // Check for specific task_summary tag
             if (lastAssistantMessageText.includes("<task_summary>")) {
-              network.state.data.error = lastAssistantMessageText;
+              (network.state.data as AgentState).error = lastAssistantMessageText;
             }
           }
           return result;
@@ -159,6 +157,7 @@ export const codeAgentFunction = inngest.createFunction(
       if (isError) {
         return await prisma.message.create({
           data: {
+            projectId: event.data.projectId,
             content: "Something went wrong, please try again.",
             role: "ASSISTANT",
             type: "ERROR",
@@ -166,12 +165,12 @@ export const codeAgentFunction = inngest.createFunction(
       })
     }
 
-      const content = result.state.data.summary || 
-                     lastAssistantTextMessageContent(result) || 
+  const content = result.state.data.summary || 
+         lastAssistantTextMessageContent(result) || 
                      "Generated a landing page";
-      
       return await prisma.message.create({
         data: {
+          projectId: event.data.projectId,
           content: content,
           role: "ASSISTANT",
           type: "RESULT",
@@ -190,8 +189,8 @@ export const codeAgentFunction = inngest.createFunction(
       url: sandboxUrl,
       title: "Fragment",
       files: result.state.data.files || {},
-      summary: result.state.data.summary || 
-               lastAssistantTextMessageContent(result) || 
+  summary: result.state.data.summary || 
+       lastAssistantTextMessageContent(result) || 
                "Generated a landing page",
     };
 });
