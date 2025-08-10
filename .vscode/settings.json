@@ -18,5 +18,7 @@
     "**/node_modules": true,
     "**/src/generated": true,
     "**/.next": true
-  }
+  },
+  "WillLuke.nextjs.addTypesOnSave": true,
+  "WillLuke.nextjs.hasPrompted": true
 }
