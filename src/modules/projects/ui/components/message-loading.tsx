@@ -3,16 +3,27 @@ import { useState, useEffect } from "react";
 
 const ShimmerMessages = () => {
     const messages = [
-        "Thinking...",
-        "Loading...",
-        "Generating...",
+        "Powering up...",
+        "Gathering chakra...",
+        "Charging kamehameha...",
         "Using the Dragon Balls...",
-        "Analyzing your request...",
-        "Building your website...",
-        "Crafting Components...",
-        "Optimizing Layout...",
-        "Adding final touches...",
-        "Almost ready...",
+        "Summoning Shenron...",
+        "Activating Sharingan...",
+        "Going Super Saiyan...",
+        "Performing hand signs...",
+        "Unleashing Bankai...",
+        "Spirit bomb charging...",
+        "One For All: Full Cowling...",
+        "Gear Second activated...",
+        "Opening the Eight Gates...",
+        "Rasengan in progress...",
+        "Mastering Sun Breathing...",
+        "Stand power manifesting...",
+        "Drawing Transmutation Circles...",
+        "Performing Human Transmutation...",
+        "Wiping out the Uchiha Clan...",
+        "Titan transformation...",
+        "Almost Over 9000...",
     ];
 
     const [currentMessage, setCurrentMessage] = useState(0);
@@ -23,7 +34,7 @@ const ShimmerMessages = () => {
         }, 2000);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [messages.length]);
 
     return (
         <div className="flex items-center gap-2">
