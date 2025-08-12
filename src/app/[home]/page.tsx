@@ -13,8 +13,8 @@ const Page = () => {
           <Image 
             src="/logo.svg"
             alt="Vibe"
-            width={50}
-            height={50}
+            width={75}
+            height={75}
             className="hidden md:block"
           />
         </div>
