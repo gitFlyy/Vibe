@@ -17,6 +17,7 @@ import { EyeIcon, CodeIcon, CrownIcon} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { FileExplorer } from "@/components/ui/file-explorer";
+import { UserControl } from './../../../../components/user-control';
 
 interface Props {
     projectId: string;
@@ -63,7 +64,7 @@ export const ProjectView = ({ projectId }: Props) => {
                                 </TabsTrigger>
                                 <TabsTrigger value="code" className="rounded-md">
                                     <CodeIcon /> <span>Code</span>
-                                </TabsTrigger>     
+                                </TabsTrigger>
                             </TabsList>
                             <div className="ml-auto flex items-center gap-x-2">
                                 <Button asChild size="sm" variant="tertiary">
@@ -71,7 +72,8 @@ export const ProjectView = ({ projectId }: Props) => {
                                         <CrownIcon /> Upgrade
                                     </Link>
                                 </Button>
-                            </div>            
+                                <UserControl />
+                            </div>
                         </div>
                         <TabsContent value="preview">
                             {!!activeFragment && <FragmentWeb data={activeFragment} />}
