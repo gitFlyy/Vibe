@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db"
 import { protectedProcedure, createTRPCRouter } from "@/trpc/init"
 import { z } from "zod";
 import { TRPCError } from '@trpc/server';
+import { consumeCredits } from "@/lib/usage";
 
 export const messagesRouter = createTRPCRouter({
     getMany: protectedProcedure
@@ -52,6 +53,23 @@ export const messagesRouter = createTRPCRouter({
                 message: "Project not found"
             });
         }
+
+        try {
+            await consumeCredits();
+        } catch (error) {
+            if (error instanceof Error) {
+                throw new TRPCError({
+                    code: "FORBIDDEN",
+                    message: "Insufficient credits"
+                });
+            } else {
+                throw new TRPCError({
+                    code: "TOO_MANY_REQUESTS",
+                    message: "You have run out of credits"
+                });
+            }
+        }
+
 
         const createdMessage = await prisma.message.create({
             data: {
