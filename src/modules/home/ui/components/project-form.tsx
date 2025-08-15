@@ -37,14 +37,19 @@ export const ProjectForm = () => {
     const createProject = useMutation(trpc.projects.create.mutationOptions({
         onSuccess: (data) => {
             queryClient.invalidateQueries(trpc.projects.getMany.queryOptions());
-            // todo invalidate usage status
+            queryClient.invalidateQueries(trpc.usage.status.queryOptions());
             toast.success("Project created");
             router.push(`/projects/${data.id}`);
         },
         onError: (error) => {
-            toast.error("Failed to create project");
             if (error.data?.code === "UNAUTHORIZED") {
+                toast.error("Please sign in to continue");
                 clerk.openSignIn();
+            } else if (error.data?.code === "TOO_MANY_REQUESTS") {
+                toast.error("You have run out of credits");
+                router.push("/pricing");
+            } else {
+                toast.error("Failed to create project");
             }
         }
     }));

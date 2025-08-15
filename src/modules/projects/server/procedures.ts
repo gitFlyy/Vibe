@@ -4,7 +4,7 @@ import { protectedProcedure, createTRPCRouter } from "@/trpc/init"
 import { z } from "zod";
 import { generateSlug } from "random-word-slugs"
 import { TRPCError } from "@trpc/server";
-import { auth } from '@clerk/nextjs/server';
+import { consumeCredits } from "@/lib/usage";
 
 export const projectsRouter = createTRPCRouter({
     getOne: protectedProcedure
@@ -50,6 +50,23 @@ export const projectsRouter = createTRPCRouter({
         }),
     )
     .mutation(async ({ input, ctx }) => {
+
+        try {
+            await consumeCredits();
+            } catch (error) {
+                if (error instanceof Error) {
+                     throw new TRPCError({
+                        code: "FORBIDDEN",
+                        message: "Insufficient credits"
+                    });
+                } else {
+                    throw new TRPCError({
+                        code: "TOO_MANY_REQUESTS",
+                        message: "You have run out of credits"
+                    });
+                }
+            }
+
         const createdProject = await prisma.project.create({
             data: {
                 userId: ctx.auth.userId,
