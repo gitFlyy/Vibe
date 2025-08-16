@@ -1,9 +1,9 @@
 import { inngest } from "./client";
-import { openai, createAgent, createTool, createNetwork, type Tool } from "@inngest/agent-kit";
+import { openai, createAgent, createTool, createNetwork, type Tool, type Message, createState } from "@inngest/agent-kit";
 import { Sandbox } from "@e2b/code-interpreter"
-import { getSandbox, lastAssistantTextMessageContent } from "./utils";
+import { getSandbox, lastAssistantTextMessageContent, parseAgentOutput } from "./utils";
 import { z } from "zod";
-import { PROMPT } from "@/prompt";
+import { FRAGMENT_TITLE_PROMPT, PROMPT, RESPONSE_PROMPT } from "@/prompt";
 import { prisma } from "@/lib/db";
 
 interface AgentState {
@@ -21,17 +21,50 @@ export const codeAgentFunction = inngest.createFunction(
       return sandbox.sandboxId;
     });
 
+    const previousMessages = await step.run("get-previous-messages", async () => {
+      const formattedMessages: Message[] = [];
+
+      const messages = await prisma.message.findMany({
+        where: {
+          projectId: event.data.projectId,
+        },
+        orderBy: {
+          createdAt: "desc"
+        }
+      })
+
+      for (const message of messages) {
+        formattedMessages.push({
+          type: "text",
+          role: message.role === "ASSISTANT" ? "assistant" : "user",
+          content: message.content
+        })
+      }
+
+      return formattedMessages;
+    });
+
+    const state = createState<AgentState>(
+      {
+        summary: "",
+        files: {}
+      },
+      {
+        messages: previousMessages
+      }
+    );
+
     const codeAgent = createAgent<AgentState>({
       name: "code-agent",
       description: "An expert coding agent",
       system: PROMPT,
       model: openai({ model: "gpt-4.1", defaultParameters: { temperature: 0.1 } }),
       tools: [
-        // @ts-ignore - Ignoring deep type instantiation error
+        // @ts-expect-ignore - Ignoring deep type instantiation error
         createTool({
           name: "terminal",
           description: "Use the terminal to run commands",
-          // @ts-ignore - Ignoring deep type instantiation error
+          // @ts-expect-ignore - Ignoring deep type instantiation error
           parameters: z.object({
             command: z.string(),
           }),
@@ -56,11 +89,11 @@ export const codeAgentFunction = inngest.createFunction(
             });
           }
         }),
-        // @ts-ignore - Ignoring deep type instantiation error
+        // @ts-expect-ignore - Ignoring deep type instantiation error
         createTool({
             name: "createOrUpdateFiles",
             description: "Create or update files in the sandbox",
-            // @ts-ignore - Ignoring deep type instantiation error
+            // @ts-expect-ignore - Ignoring deep type instantiation error
             parameters: z.object({
               files: z.array(
                 z.object({
@@ -90,11 +123,11 @@ export const codeAgentFunction = inngest.createFunction(
               }
             }
           }),
-          // @ts-ignore - Ignoring deep type instantiation error
+          // @ts-expect-ignore - Ignoring deep type instantiation error
           createTool({
             name: "readFiles",
             description: "Read files from the sandbox",
-            // @ts-ignore - Ignoring deep type instantiation error
+            // @ts-expect-ignore - Ignoring deep type instantiation error
             parameters: z.object({
               files: z.array(z.string()),
             }),
@@ -134,6 +167,7 @@ export const codeAgentFunction = inngest.createFunction(
       name: "coding-agent-network",
       agents: [codeAgent],
       maxIter: 15,
+      defaultState: state,
       router: async ({ network }) => {
         const summary = network.state.data.summary;
         if (summary) {
@@ -143,7 +177,28 @@ export const codeAgentFunction = inngest.createFunction(
       }
     })
 
-    const result = await network.run(event.data.value);
+    const result = await network.run(event.data.value, { state });
+
+    const fragmentTitleGenerator = createAgent({
+      name: "fragment-title-generator",
+      description: "Generates a title for a code fragment",
+      system: FRAGMENT_TITLE_PROMPT,
+      model: openai({
+        model: "gpt-4o"
+      })
+    });
+
+    const responseGenerator = createAgent({
+      name: "response-generator",
+      description: "Generates a response based on the task summary",
+      system: RESPONSE_PROMPT,
+      model: openai({
+        model: "gpt-4o"
+      })
+    });
+
+    const { output: fragmentTitleOutput } = await fragmentTitleGenerator.run(result.state.data.summary);
+    const { output: responseOutput } = await responseGenerator.run(result.state.data.summary);
 
     const isError = !result.state.data.summary || Object.keys(result.state.data.files || {}).length === 0;
 
@@ -165,19 +220,19 @@ export const codeAgentFunction = inngest.createFunction(
       })
     }
 
-  const content = result.state.data.summary || 
-         lastAssistantTextMessageContent(result) || 
+  const content = result.state.data.summary ||
+         lastAssistantTextMessageContent(result) ||
                      "Generated a landing page";
       return await prisma.message.create({
         data: {
           projectId: event.data.projectId,
-          content: content,
+          content: parseAgentOutput(responseOutput),
           role: "ASSISTANT",
           type: "RESULT",
           fragment: {
             create: {
               sandboxUrl: sandboxUrl,
-              title: "Fragment",
+              title: parseAgentOutput(fragmentTitleOutput),
               files: result.state.data.files || {}
             }
           }
@@ -185,12 +240,12 @@ export const codeAgentFunction = inngest.createFunction(
       })
     });
 
-    return { 
+    return {
       url: sandboxUrl,
       title: "Fragment",
       files: result.state.data.files || {},
-  summary: result.state.data.summary || 
-       lastAssistantTextMessageContent(result) || 
+  summary: result.state.data.summary ||
+       lastAssistantTextMessageContent(result) ||
                "Generated a landing page",
     };
 });
