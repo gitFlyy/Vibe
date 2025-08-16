@@ -1,8 +1,10 @@
 import { Sandbox } from "@e2b/code-interpreter";
 import { AgentResult, TextMessage, Message } from "@inngest/agent-kit"
+import { SANDBOX_TIMEOUT } from "./types";
 
 export async function getSandbox(sandboxId: string) {
   const sandbox = await Sandbox.connect(sandboxId);
+  await sandbox.setTimeout(SANDBOX_TIMEOUT);
   return sandbox;
 }
 
@@ -11,6 +13,7 @@ export async function getSandbox(sandboxId: string) {
 // last assistant message.
 export function lastAssistantTextMessageContent(arg: unknown) {
   // Handle either an AgentResult or an object with a `result: AgentResult` property.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const maybe: any = arg as any;
   const res: AgentResult | undefined = maybe?.output
     ? (maybe as AgentResult)
