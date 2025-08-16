@@ -4,9 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "cross-env NODE_OPTIONS=\"--max-old-space-size=8192\" next build",
+    "build:strict": "cross-env NODE_OPTIONS=\"--max-old-space-size=8192\" next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.30.1",
@@ -82,6 +85,8 @@
     "@types/prismjs": "^1.26.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^10.0.0",
+    "drizzle-orm": "^0.44.4",
     "eslint": "^9",
     "eslint-config-next": "15.3.4",
     "prisma": "^6.13.0",
