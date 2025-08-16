@@ -2,13 +2,12 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
 // Allow Clerk pages to be accessed without auth; your auth pages live under /home
 const isPublicRoute = createRouteMatcher([
-  '/home/sign-in(.*)',
-  '/home/sign-up(.*)',
+  '/sign-in(.*)',
+  '/sign-up(.*)',
   '/api/inngest(.*)',
   '/',
   '/pricing'
-
-])
+]);
 
 export default clerkMiddleware(async (auth, req) => {
   // For protected routes, redirect to sign-in if not authenticated
