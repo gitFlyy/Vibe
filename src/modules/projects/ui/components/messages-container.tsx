@@ -20,7 +20,7 @@ export const MessagesContainer = ({ projectId, activeFragment, setActiveFragment
         projectId: projectId
     }, {
         // todo live message updates
-        refetchInterval: 5000
+        refetchInterval: 3000
     }));
 
     useEffect(() => {
