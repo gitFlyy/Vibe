@@ -15,7 +15,7 @@ const Page = () => {
             alt="Vibe"
             width={75}
             height={75}
-            className="hidden md:block"
+            className="w-18 h-18 md:w-[100px] md:h-[100px]"
           />
         </div>
         <h1 className="text-2xl md:text-5xl font-bold text-center">
