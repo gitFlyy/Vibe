@@ -2,6 +2,8 @@
 
 **Vibe** is a full-stack AI-native platform that transforms natural language prompts into production-ready web applications. Built with **Next.js**, **Inngest**, and **E2B**, Vibe architecturally handles complex code generation in the background, delivering a complete `.tsx` codebase and file structure.
 
+![Vibe Hero Image](./assets/hero-banner.png)
+
 ---
 
 ## 🚀 The Workflow
@@ -11,6 +13,11 @@ Vibe is an asynchronous engine designed for reliability:
 2. **Background Processing:** **Inngest** triggers a reliable background workflow. No browser timeouts—the job runs until it's perfect.
 3. **Sandboxed Generation:** Using **E2B sandboxes**, the AI generates a real file system, validates the code, and packages it in an isolated environment.
 4. **Completion:** Secure notifications powered by **Clerk** alert you when your build is ready for download.
+
+<p align="center">
+  <img src="./assets/generation-process.png" alt="AI Generation Process" width="45%" />
+  <img src="./assets/code-output.png" alt="File Structure Output" width="45%" />
+</p>
 
 ---
 
