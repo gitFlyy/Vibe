@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vibe ⚡️
 
-## Getting Started
+**Vibe** is an AI-powered web development platform that transforms natural language prompts into production-ready, full-stack websites. Built with **Next.js** and **Inngest**, Vibe handles the heavy lifting of code generation and file structuring in the background, delivering a complete `.tsx` codebase ready for deployment.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 The Workflow
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Vibe isn't just a simple wrapper; it’s an asynchronous engine:
+1. **The Prompt:** You describe the website you want (e.g., *"A modern SaaS landing page with dark mode and a pricing table"*).
+2. **Background Processing:** **Inngest** triggers a reliable background job. No more timing out on long LLM calls.
+3. **Sandboxed Generation:** Using **E2B sandboxes**, the AI generates a real file structure, validates the code, and packages it in an isolated environment.
+4. **Completion:** Vibe notifies you once the build is finished. You get a full directory of `.tsx` files, components, and logic—not just a single code block.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠 Tech Stack
 
-## Learn More
+- **Framework:** [Next.js](https://nextjs.org/) (App Router)
+- **Workflow Engine:** [Inngest](https://www.inngest.com/) (Reliable background jobs & queues)
+- **Runtime Sandbox:** [E2B](https://e2b.dev/) (Isolated code interpretation and file system)
+- **LLM:** [OpenAI API](https://openai.com/) (GPT-4o / o1 for architectural logic)
+- **Styling:** Tailwind CSS
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## ✨ Key Features
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Asynchronous UI:** Start a build, close the tab, and come back when it's done.
+- **Full File Structure:** Generates entire folders, not just snippets.
+- **Production-Ready Code:** Outputs clean, modular `.tsx` files.
+- **Error Resilience:** Inngest retries ensure that even if an API flickers, your build continues.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
